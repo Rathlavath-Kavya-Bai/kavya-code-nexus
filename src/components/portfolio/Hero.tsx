@@ -134,3 +134,66 @@ export function Hero() {
     </section>
   );
 }
+
+function ResumeButtons() {
+  const { enabled } = useEditMode();
+  const { file, save, clear } = useLocalFile("portfolio.resume");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      {file ? (
+        <>
+          <button
+            onClick={() => downloadStored(file)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all"
+          >
+            <Download className="w-4 h-4" /> Download Resume
+          </button>
+          <button
+            onClick={() => openStored(file)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all"
+          >
+            <FileText className="w-4 h-4" /> View Resume
+          </button>
+        </>
+      ) : (
+        !enabled && (
+          <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass text-muted-foreground">
+            <FileText className="w-4 h-4" /> Resume coming soon
+          </span>
+        )
+      )}
+      {enabled && (
+        <>
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
+          >
+            <Upload className="w-4 h-4" /> {file ? "Replace Resume" : "Upload Resume"}
+          </button>
+          {file && (
+            <button
+              onClick={clear}
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-full text-sm font-medium glass hover:border-destructive/60 transition-all"
+              title="Remove resume"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            accept="application/pdf,image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) save(f);
+              e.target.value = "";
+            }}
+          />
+        </>
+      )}
+    </>
+  );
+}
