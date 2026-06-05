@@ -1,29 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Navbar } from "@/components/portfolio/Navbar";
+import { Hero } from "@/components/portfolio/Hero";
+import { About } from "@/components/portfolio/About";
+import { Skills } from "@/components/portfolio/Skills";
+import { Projects } from "@/components/portfolio/Projects";
+import { Achievements } from "@/components/portfolio/Achievements";
+import { Education } from "@/components/portfolio/Education";
+import { Contact } from "@/components/portfolio/Contact";
+import { Footer } from "@/components/portfolio/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Rathlavath Kavya Bai — Full Stack Developer & AI Enthusiast" },
+      {
+        name: "description",
+        content:
+          "Portfolio of Rathlavath Kavya Bai — CSE student, Full Stack Developer, AI enthusiast and founder of Farmer's Friendly. Projects, skills, achievements and contact.",
+      },
+      { property: "og:title", content: "Rathlavath Kavya Bai — Full Stack Developer & AI Enthusiast" },
+      { property: "og:description", content: "Turning ideas into meaningful technology solutions." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="relative min-h-screen bg-background text-foreground">
+      <Navbar />
+      <main>
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Achievements />
+        <Education />
+        <Contact />
+      </main>
+      <Footer />
     </div>
   );
 }
