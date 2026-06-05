@@ -1,6 +1,8 @@
 import { SectionHeader } from "./About";
 import { ExternalLink, Github, ShoppingBag, Search, Sprout, Bot, Briefcase } from "lucide-react";
 
+const GITHUB_USER = "https://github.com/Rathlavth-Kavya-Bai";
+
 const projects = [
   {
     icon: ShoppingBag,
@@ -8,6 +10,8 @@ const projects = [
     description:
       "A modern e-commerce platform with product search, filtering, sorting, authentication and secure JWT login.",
     tech: ["React.js", "JavaScript", "Bootstrap", "CSS", "REST APIs", "JWT"],
+    github: `${GITHUB_USER}/nxt-trendz`,
+    live: "https://nxt-trendz-kavya.vercel.app",
   },
   {
     icon: Search,
@@ -15,6 +19,8 @@ const projects = [
     description:
       "Responsive search platform that fetches and displays Wikipedia results in real time via API integration.",
     tech: ["HTML", "CSS", "JavaScript", "Bootstrap", "REST APIs"],
+    github: `${GITHUB_USER}/wikipedia-search`,
+    live: "https://wikipedia-search-kavya.vercel.app",
   },
   {
     icon: Sprout,
@@ -22,6 +28,8 @@ const projects = [
     description:
       "Farmer-support application providing crop prediction, weather updates and fertilizer recommendations.",
     tech: ["HTML", "CSS", "Python", "AI Concepts"],
+    github: `${GITHUB_USER}/green-farm-coach`,
+    live: "",
   },
   {
     icon: Bot,
@@ -29,6 +37,8 @@ const projects = [
     description:
       "AI-powered agriculture platform: crop recommendations, weather alerts, livestock guidance, government schemes, market prices, expert support and a chatbot.",
     tech: ["AI", "Machine Learning", "Python", "React", "APIs"],
+    github: `${GITHUB_USER}/farmers-friendly`,
+    live: "",
     featured: true,
   },
 ];
@@ -75,13 +85,27 @@ export function Projects() {
                     </span>
                   ))}
                 </div>
-                <div className="flex gap-3 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5 hover:text-foreground cursor-pointer">
-                    <Github className="w-3.5 h-3.5" /> Source
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 hover:text-foreground cursor-pointer">
-                    <ExternalLink className="w-3.5 h-3.5" /> Live
-                  </span>
+                <div className="flex gap-3 text-xs">
+                  {p.github && (
+                    <a
+                      href={p.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-border hover:border-neon-purple/60 hover:text-neon-cyan transition-all"
+                    >
+                      <Github className="w-3.5 h-3.5" /> View on GitHub
+                    </a>
+                  )}
+                  {p.live && (
+                    <a
+                      href={p.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-border hover:border-neon-purple/60 hover:text-neon-cyan transition-all"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                    </a>
+                  )}
                 </div>
               </div>
             </article>
