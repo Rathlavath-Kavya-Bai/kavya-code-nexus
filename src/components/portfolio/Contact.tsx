@@ -26,7 +26,7 @@ export function Contact() {
                 key={c.label}
                 href={c.href}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="flex items-center gap-4 glass rounded-xl p-4 hover:neon-border transition-all group"
               >
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
