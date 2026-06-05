@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { Download, Mail, Briefcase, ArrowRight, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Download, Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText, Trash2 } from "lucide-react";
+import { useEditMode, useLocalFile, downloadStored, openStored } from "@/lib/local-files";
 
 const roles = [
   "Full Stack Developer",
