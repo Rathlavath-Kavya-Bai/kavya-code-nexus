@@ -9,10 +9,10 @@ export function Footer() {
           <Heart className="w-3.5 h-3.5 text-neon-purple fill-current" />, Innovation, and Code.
         </p>
         <div className="flex items-center gap-4">
-          <a href="https://github.com/Rathlavth-Kavya-Bai" target="_blank" rel="noreferrer" className="hover:text-neon-cyan transition-colors">
+          <a href="https://github.com/Rathlavth-Kavya-Bai" target="_blank" rel="noopener noreferrer" className="hover:text-neon-cyan transition-colors">
             <Github className="w-4 h-4" />
           </a>
-          <a href="https://linkedin.com/in/rathlavath-kavya-bai-2a534a376" target="_blank" rel="noreferrer" className="hover:text-neon-cyan transition-colors">
+          <a href="https://linkedin.com/in/rathlavath-kavya-bai-2a534a376" target="_blank" rel="noopener noreferrer" className="hover:text-neon-cyan transition-colors">
             <Linkedin className="w-4 h-4" />
           </a>
           <a href="mailto:kavyabairathlavth@gmail.com" className="hover:text-neon-cyan transition-colors">
