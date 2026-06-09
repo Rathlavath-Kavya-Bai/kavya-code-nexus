@@ -9,6 +9,7 @@ import { Education } from "@/components/portfolio/Education";
 import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
 import { EditToggle } from "@/components/portfolio/EditToggle";
+import { BackToTop } from "@/components/portfolio/BackToTop";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +45,7 @@ function Index() {
       </main>
       <Footer />
       <EditToggle />
+      <BackToTop />
     </div>
   );
 }
