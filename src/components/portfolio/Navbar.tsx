@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
-import { Code2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Code2, Sun, Moon, Download, Upload, FileText } from "lucide-react";
+import { useEditMode, useLocalFile, downloadStored } from "@/lib/local-files";
 
 const links = [
   { href: "#home", label: "Home" },
   { href: "#about", label: "About" },
   { href: "#skills", label: "Skills" },
+  { href: "#internship", label: "Internship" },
   { href: "#projects", label: "Projects" },
   { href: "#achievements", label: "Achievements" },
+  { href: "#certificates", label: "Certifications" },
   { href: "#education", label: "Education" },
   { href: "#contact", label: "Contact" },
 ];
@@ -14,6 +17,7 @@ const links = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [light, setLight] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -21,18 +25,33 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("portfolio.theme");
+    if (saved === "light") {
+      document.documentElement.classList.add("light");
+      setLight(true);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !light;
+    setLight(next);
+    document.documentElement.classList.toggle("light", next);
+    localStorage.setItem("portfolio.theme", next ? "light" : "dark");
+  };
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "glass-strong py-3" : "py-5"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a href="#home" className="flex items-center gap-2 font-bold text-lg">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+        <a href="#home" className="flex items-center gap-2 font-bold text-lg shrink-0">
           <Code2 className="w-6 h-6 text-neon-purple" />
           <span className="text-gradient">Kavya.dev</span>
         </a>
-        <ul className="hidden md:flex items-center gap-7 text-sm">
+        <ul className="hidden lg:flex items-center gap-6 text-sm">
           {links.map((l) => (
             <li key={l.href}>
               <a
@@ -45,14 +64,18 @@ export function Navbar() {
             </li>
           ))}
         </ul>
-        <a
-          href="#contact"
-          className="hidden md:inline-flex items-center px-5 py-2 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
-        >
-          Hire Me
-        </a>
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          <ResumeNavButton />
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="w-9 h-9 rounded-full glass flex items-center justify-center hover:neon-border transition-all"
+          >
+            {light ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
+        </div>
         <button
-          className="md:hidden text-foreground"
+          className="lg:hidden text-foreground"
           onClick={() => setOpen(!open)}
           aria-label="Menu"
         >
@@ -62,7 +85,7 @@ export function Navbar() {
         </button>
       </div>
       {open && (
-        <div className="md:hidden glass-strong mt-3 mx-6 rounded-xl p-4">
+        <div className="lg:hidden glass-strong mt-3 mx-6 rounded-xl p-4">
           {links.map((l) => (
             <a
               key={l.href}
@@ -76,5 +99,50 @@ export function Navbar() {
         </div>
       )}
     </nav>
+  );
+}
+
+function ResumeNavButton() {
+  const { enabled } = useEditMode();
+  const { file, save } = useLocalFile("portfolio.resume");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  if (file) {
+    return (
+      <button
+        onClick={() => downloadStored(file)}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow transition-all"
+      >
+        <Download className="w-3.5 h-3.5" /> Resume
+      </button>
+    );
+  }
+  if (enabled) {
+    return (
+      <>
+        <button
+          onClick={() => inputRef.current?.click()}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow transition-all"
+        >
+          <Upload className="w-3.5 h-3.5" /> Upload Resume
+        </button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="application/pdf,image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) save(f);
+            e.target.value = "";
+          }}
+        />
+      </>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium glass text-muted-foreground">
+      <FileText className="w-3.5 h-3.5" /> Resume soon
+    </span>
   );
 }
