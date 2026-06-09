@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Code2, Sun, Moon, Download, Upload, FileText } from "lucide-react";
+import { Code2, Sun, Moon, Download, Upload, FileText, Linkedin, Github } from "lucide-react";
 import { useEditMode, useLocalFile, downloadStored } from "@/lib/local-files";
 
 const links = [
@@ -65,6 +65,24 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden md:flex items-center gap-2 shrink-0">
+          <a
+            href="https://linkedin.com/in/rathlavath-kavya-bai-2a534a376"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            className="w-9 h-9 rounded-full glass flex items-center justify-center hover:neon-border hover:text-neon-cyan transition-all"
+          >
+            <Linkedin className="w-4 h-4" />
+          </a>
+          <a
+            href="https://github.com/Rathlavth-Kavya-Bai"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="w-9 h-9 rounded-full glass flex items-center justify-center hover:neon-border hover:text-neon-cyan transition-all"
+          >
+            <Github className="w-4 h-4" />
+          </a>
           <ResumeNavButton />
           <button
             onClick={toggleTheme}
