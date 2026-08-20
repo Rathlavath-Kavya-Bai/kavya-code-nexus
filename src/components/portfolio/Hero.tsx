@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Download, Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText, Trash2 } from "lucide-react";
 import { useEditMode, useLocalFile, downloadStored, openStored } from "@/lib/local-files";
+import { EMAIL, RESUME_URL } from "@/lib/portfolio-data";
 
 const roles = [
   "Full Stack Developer",
@@ -10,33 +11,44 @@ const roles = [
   "Problem Solver",
 ];
 
+const TYPE_SPEED = 80;
+const DELETE_SPEED = 40;
+const HOLD_MS = 1500;
+
 function TypingText() {
-  const [i, setI] = useState(0);
-  const [text, setText] = useState("");
-  const [del, setDel] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [count, setCount] = useState(0);
+  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">("typing");
+
+  const current = roles[index];
 
   useEffect(() => {
-    const current = roles[i];
-    const speed = del ? 40 : 90;
-    const t = setTimeout(() => {
-      if (!del) {
-        setText(current.slice(0, text.length + 1));
-        if (text.length + 1 === current.length) setTimeout(() => setDel(true), 1400);
+    let delay = TYPE_SPEED;
+    if (phase === "holding") delay = HOLD_MS;
+    else if (phase === "deleting") delay = DELETE_SPEED;
+
+    const timer = setTimeout(() => {
+      if (phase === "typing") {
+        if (count < current.length) setCount(count + 1);
+        else setPhase("holding");
+      } else if (phase === "holding") {
+        setPhase("deleting");
       } else {
-        setText(current.slice(0, text.length - 1));
-        if (text.length - 1 === 0) {
-          setDel(false);
-          setI((i + 1) % roles.length);
+        if (count > 0) setCount(count - 1);
+        else {
+          setIndex((i) => (i + 1) % roles.length);
+          setPhase("typing");
         }
       }
-    }, speed);
-    return () => clearTimeout(t);
-  }, [text, del, i]);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [phase, count, current]);
 
   return (
-    <span className="text-gradient">
-      {text}
-      <span className="animate-blink text-neon-purple">|</span>
+    <span className="text-gradient" aria-label={current}>
+      {current.slice(0, count)}
+      <span className="animate-blink text-neon-purple" aria-hidden="true">|</span>
     </span>
   );
 }
@@ -44,7 +56,7 @@ function TypingText() {
 function Particles() {
   const dots = Array.from({ length: 40 });
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {dots.map((_, i) => (
         <div
           key={i}
@@ -74,11 +86,11 @@ export function Hero() {
       className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden"
       style={{ background: "var(--gradient-hero)" }}
     >
-      <div className="absolute inset-0 grid-bg opacity-40" />
+      <div className="absolute inset-0 grid-bg opacity-40" aria-hidden="true" />
       <Particles />
 
-      <div className="absolute top-1/4 left-10 w-72 h-72 rounded-full bg-neon-purple/20 blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 right-10 w-96 h-96 rounded-full bg-neon-blue/20 blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+      <div className="absolute top-1/4 left-10 w-72 h-72 rounded-full bg-neon-purple/20 blur-3xl animate-float" aria-hidden="true" />
+      <div className="absolute bottom-1/4 right-10 w-96 h-96 rounded-full bg-neon-blue/20 blur-3xl animate-float" style={{ animationDelay: "2s" }} aria-hidden="true" />
 
       <div className="relative max-w-5xl mx-auto px-6 text-center animate-fade-up">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-mono mb-8">
@@ -87,12 +99,12 @@ export function Hero() {
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </div>
 
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
           Rathlavath <br />
           <span className="text-gradient">Kavya Bai</span>
         </h1>
 
-        <div className="h-8 md:h-10 text-xl md:text-2xl font-mono mb-6">
+        <div className="h-8 md:h-10 text-lg sm:text-xl md:text-2xl font-mono mb-6">
           <TypingText />
         </div>
 
@@ -101,15 +113,15 @@ export function Hero() {
         </p>
 
         <p className="text-sm md:text-base text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-          Passionate Computer Science Engineering student with expertise in modern web development,
-          AI-driven solutions, and innovative technology. Dedicated to building impactful
-          applications that solve real-world problems.
+          A passionate Computer Science Engineering student with hands-on experience in modern web
+          development, AI-driven solutions and innovative technology — dedicated to building
+          impactful applications that solve real-world problems.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
           <a
             href="#projects"
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white animate-glow-pulse"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white animate-glow-pulse focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
             style={{ background: "var(--gradient-primary)" }}
           >
             View Projects
@@ -119,13 +131,13 @@ export function Hero() {
 
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
           >
             <Mail className="w-4 h-4" /> Contact Me
           </a>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
           >
             <Briefcase className="w-4 h-4" /> Hire Me
           </a>
@@ -135,6 +147,9 @@ export function Hero() {
   );
 }
 
+const btn =
+  "inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan";
+
 function ResumeButtons() {
   const { enabled } = useEditMode();
   const { file, save, clear } = useLocalFile("portfolio.resume");
@@ -142,33 +157,40 @@ function ResumeButtons() {
 
   return (
     <>
-      {file ? (
+      {RESUME_URL ? (
         <>
-          <button
-            onClick={() => downloadStored(file)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all"
-          >
-            <Download className="w-4 h-4" /> Download Resume
-          </button>
-          <button
-            onClick={() => openStored(file)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all"
-          >
+          <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className={btn}>
             <FileText className="w-4 h-4" /> View Resume
+          </a>
+          <a href={RESUME_URL} download className={btn}>
+            <Download className="w-4 h-4" /> Download Resume
+          </a>
+        </>
+      ) : file ? (
+        <>
+          <button onClick={() => openStored(file)} className={btn}>
+            <FileText className="w-4 h-4" /> View Resume
+          </button>
+          <button onClick={() => downloadStored(file)} className={btn}>
+            <Download className="w-4 h-4" /> Download Resume
           </button>
         </>
       ) : (
         !enabled && (
-          <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass text-muted-foreground">
-            <FileText className="w-4 h-4" /> Resume coming soon
-          </span>
+          <a
+            href={`mailto:${EMAIL}?subject=Resume%20Request`}
+            className={btn}
+            aria-label="Request resume by email"
+          >
+            <FileText className="w-4 h-4" /> Request Resume
+          </a>
         )
       )}
       {enabled && (
         <>
           <button
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
           >
             <Upload className="w-4 h-4" /> {file ? "Replace Resume" : "Upload Resume"}
           </button>
@@ -176,6 +198,7 @@ function ResumeButtons() {
             <button
               onClick={clear}
               className="inline-flex items-center gap-2 px-4 py-3 rounded-full text-sm font-medium glass hover:border-destructive/60 transition-all"
+              aria-label="Remove resume"
               title="Remove resume"
             >
               <Trash2 className="w-4 h-4" />
@@ -186,6 +209,7 @@ function ResumeButtons() {
             type="file"
             accept="application/pdf,image/*"
             className="hidden"
+            aria-label="Upload resume file"
             onChange={(e) => {
               const f = e.target.files?.[0];
               if (f) save(f);
