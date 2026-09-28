@@ -13,7 +13,7 @@ const stats = [
 
 export function About() {
   return (
-    <section id="about" className="relative py-24 px-6">
+    <section id="about" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
         <SectionHeader eyebrow="01 — About" title="Building tech with purpose" />
 

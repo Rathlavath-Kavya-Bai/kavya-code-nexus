@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { SectionHeader } from "./About";
 import { Mail, Phone, Linkedin, Github, Send, Briefcase } from "lucide-react";
+import { EMAIL, PHONE, PHONE_DISPLAY, GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
 
 export function Contact() {
   const [sent, setSent] = useState(false);
 
   return (
-    <section id="contact" className="relative py-24 px-6">
+    <section id="contact" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
         <SectionHeader eyebrow="06 — Contact" title="Let's build something" />
 
@@ -17,10 +18,10 @@ export function Contact() {
               Drop a message — I'll get back within 24 hours.
             </p>
             {[
-              { icon: Mail, label: "Email", value: "kavyabairathlavth@gmail.com", href: "mailto:kavyabairathlavth@gmail.com" },
-              { icon: Phone, label: "Phone", value: "+91 9391601350", href: "tel:+919391601350" },
-              { icon: Linkedin, label: "LinkedIn", value: "rathlavath-kavya-bai", href: "https://linkedin.com/in/rathlavath-kavya-bai-2a534a376" },
-              { icon: Github, label: "GitHub", value: "Rathlavth-Kavya-Bai", href: "https://github.com/Rathlavth-Kavya-Bai" },
+              { icon: Mail, label: "Email", value: EMAIL, href: `mailto:${EMAIL}` },
+              { icon: Phone, label: "Phone", value: PHONE_DISPLAY, href: `tel:${PHONE}` },
+              { icon: Linkedin, label: "LinkedIn", value: "rathlavath-kavya-bai", href: LINKEDIN_PROFILE },
+              { icon: Github, label: "GitHub", value: "Rathlavath-Kavya-Bai", href: GITHUB_PROFILE },
             ].map((c) => (
               <a
                 key={c.label}
@@ -44,9 +45,17 @@ export function Contact() {
             className="lg:col-span-3 glass-strong rounded-2xl p-7 space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
+              const form = e.currentTarget;
+              const data = new FormData(form);
+              const name = String(data.get("name") || "").slice(0, 100);
+              const email = String(data.get("email") || "").slice(0, 255);
+              const subject = String(data.get("subject") || "Portfolio Contact").slice(0, 150);
+              const message = String(data.get("message") || "").slice(0, 1000);
+              const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
+              window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
               setSent(true);
               setTimeout(() => setSent(false), 3500);
-              (e.target as HTMLFormElement).reset();
+              form.reset();
             }}
           >
             <div className="grid md:grid-cols-2 gap-4">
@@ -74,7 +83,7 @@ export function Contact() {
                 {sent ? "Message sent!" : "Send Message"}
               </button>
               <a
-                href="mailto:kavyabairathlavth@gmail.com?subject=Hiring%20Opportunity"
+                href={`mailto:${EMAIL}?subject=Hiring%20Opportunity`}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
               >
                 <Briefcase className="w-4 h-4" /> Hire Me

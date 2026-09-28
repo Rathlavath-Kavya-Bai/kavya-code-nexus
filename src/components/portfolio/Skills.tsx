@@ -11,7 +11,7 @@ const groups = [
 
 export function Skills() {
   return (
-    <section id="skills" className="relative py-24 px-6">
+    <section id="skills" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
         <SectionHeader eyebrow="02 — Skills" title="Tools of the craft" />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
