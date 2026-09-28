@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Code2, Sun, Moon, Download, Upload, FileText, Linkedin, Github } from "lucide-react";
 import { useEditMode, useLocalFile, downloadStored } from "@/lib/local-files";
+import { GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
 
 const links = [
   { href: "#home", label: "Home" },
@@ -66,7 +67,7 @@ export function Navbar() {
         </ul>
         <div className="hidden md:flex items-center gap-2 shrink-0">
           <a
-            href="https://linkedin.com/in/rathlavath-kavya-bai-2a534a376"
+            href={LINKEDIN_PROFILE}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
@@ -75,7 +76,7 @@ export function Navbar() {
             <Linkedin className="w-4 h-4" />
           </a>
           <a
-            href="https://github.com/Rathlavth-Kavya-Bai"
+            href={GITHUB_PROFILE}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"

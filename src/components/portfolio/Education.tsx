@@ -24,7 +24,7 @@ const timeline = [
 
 export function Education() {
   return (
-    <section id="education" className="relative py-24 px-6">
+    <section id="education" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-5xl mx-auto">
         <SectionHeader eyebrow="05 — Education" title="Academic journey" />
 
