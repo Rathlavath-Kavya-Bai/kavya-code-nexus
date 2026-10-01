@@ -35,7 +35,7 @@ export function Achievements() {
   return (
     <section id="achievements" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
-        <SectionHeader eyebrow="04 — Achievements" title="Wins and recognition" />
+        <SectionHeader eyebrow="05 — Achievements" title="Wins and recognition" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
           {achievements.map((a) => (
             <div

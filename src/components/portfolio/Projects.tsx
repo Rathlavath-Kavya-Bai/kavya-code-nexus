@@ -13,7 +13,7 @@ export function Projects() {
   return (
     <section id="projects" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
-        <SectionHeader eyebrow="03 — Projects" title="Things I've built" />
+        <SectionHeader eyebrow="04 — Projects" title="Things I've built" />
         <div className="grid md:grid-cols-2 gap-6">
           {PROJECTS.map((p) => {
             const Icon = icons[p.id] ?? Bot;

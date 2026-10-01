@@ -26,7 +26,7 @@ export function Education() {
   return (
     <section id="education" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-5xl mx-auto">
-        <SectionHeader eyebrow="05 — Education" title="Academic journey" />
+        <SectionHeader eyebrow="06 — Education" title="Academic journey" />
 
         <div className="relative pl-8 md:pl-12">
           <div className="absolute left-2 md:left-4 top-2 bottom-2 w-px bg-gradient-to-b from-neon-purple via-neon-blue to-transparent" />

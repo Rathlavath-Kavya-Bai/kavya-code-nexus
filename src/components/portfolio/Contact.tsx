@@ -1,10 +1,29 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { SectionHeader } from "./About";
 import { Mail, Phone, Linkedin, Github, Send, Briefcase } from "lucide-react";
 import { EMAIL, PHONE, PHONE_DISPLAY, GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
+import { sendContactMessage } from "@/lib/contact.functions";
+
+const HIRE_SUBJECT = "Job Opportunity / Hiring Inquiry";
 
 export function Contact() {
-  const [sent, setSent] = useState(false);
+  const send = useServerFn(sendContactMessage);
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [note, setNote] = useState("");
+  const [subject, setSubject] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  const prefillHire = useCallback(() => {
+    setSubject(HIRE_SUBJECT);
+    setTimeout(() => nameRef.current?.focus({ preventScroll: true }), 600);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("portfolio:hire", prefillHire);
+    return () => window.removeEventListener("portfolio:hire", prefillHire);
+  }, [prefillHire]);
 
   return (
     <section id="contact" className="relative py-24 px-6 scroll-mt-24">
@@ -42,52 +61,102 @@ export function Contact() {
           </div>
 
           <form
-            className="lg:col-span-3 glass-strong rounded-2xl p-7 space-y-4"
-            onSubmit={(e) => {
+            ref={formRef}
+            noValidate
+            className="lg:col-span-3 glass-strong rounded-2xl p-5 sm:p-7 space-y-4"
+            onSubmit={async (e) => {
               e.preventDefault();
+              if (status === "sending") return;
               const form = e.currentTarget;
-              const data = new FormData(form);
-              const name = String(data.get("name") || "").slice(0, 100);
-              const email = String(data.get("email") || "").slice(0, 255);
-              const subject = String(data.get("subject") || "Portfolio Contact").slice(0, 150);
-              const message = String(data.get("message") || "").slice(0, 1000);
-              const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-              window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-              setSent(true);
-              setTimeout(() => setSent(false), 3500);
-              form.reset();
+              const fd = new FormData(form);
+              const values = {
+                name: String(fd.get("name") || "").trim(),
+                email: String(fd.get("email") || "").trim(),
+                subject: subject.trim(),
+                message: String(fd.get("message") || "").trim(),
+              };
+              if (!values.name || !values.email || !values.subject || !values.message) {
+                setStatus("error");
+                setNote("Please fill in all fields.");
+                return;
+              }
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+                setStatus("error");
+                setNote("Please enter a valid email address.");
+                return;
+              }
+              setStatus("sending");
+              setNote("");
+              try {
+                const res = await send({ data: values });
+                if (res.ok) {
+                  setStatus("success");
+                  setNote("Message sent successfully!");
+                  form.reset();
+                  setSubject("");
+                } else {
+                  setStatus("error");
+                  setNote(res.error);
+                }
+              } catch {
+                setStatus("error");
+                setNote("Could not send your message. Please try again.");
+              }
             }}
           >
             <div className="grid md:grid-cols-2 gap-4">
-              <Field label="Name" name="name" type="text" />
+              <Field label="Name" name="name" type="text" inputRef={nameRef} />
               <Field label="Email" name="email" type="email" />
             </div>
-            <Field label="Subject" name="subject" type="text" />
             <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Message</label>
+              <label htmlFor="f-subject" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Subject</label>
+              <input
+                id="f-subject"
+                required
+                name="subject"
+                type="text"
+                maxLength={150}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label htmlFor="f-message" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Message</label>
               <textarea
+                id="f-message"
                 required
                 name="message"
                 rows={5}
-                maxLength={1000}
-                className="mt-2 w-full bg-input/40 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-neon-purple/60 focus:ring-1 focus:ring-neon-purple/40 transition-all"
+                maxLength={2000}
+                className={inputCls}
               />
             </div>
+            {note && (
+              <p
+                role="status"
+                className={`text-sm ${status === "success" ? "text-neon-cyan" : "text-destructive"}`}
+              >
+                {note}
+              </p>
+            )}
             <div className="flex flex-wrap gap-3 pt-2">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white animate-glow-pulse"
+                disabled={status === "sending"}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white animate-glow-pulse disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ background: "var(--gradient-primary)" }}
               >
                 <Send className="w-4 h-4" />
-                {sent ? "Message sent!" : "Send Message"}
+                {status === "sending" ? "Sending..." : "Send Message"}
               </button>
-              <a
-                href={`mailto:${EMAIL}?subject=Hiring%20Opportunity`}
+              <button
+                type="button"
+                onClick={prefillHire}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
               >
                 <Briefcase className="w-4 h-4" /> Hire Me
-              </a>
+              </button>
             </div>
           </form>
         </div>
@@ -96,16 +165,31 @@ export function Contact() {
   );
 }
 
-function Field({ label, name, type }: { label: string; name: string; type: string }) {
+const inputCls =
+  "mt-2 w-full bg-input/40 border-2 border-muted-foreground/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-neon-purple/70 focus:ring-1 focus:ring-neon-purple/40 transition-all";
+
+function Field({
+  label,
+  name,
+  type,
+  inputRef,
+}: {
+  label: string;
+  name: string;
+  type: string;
+  inputRef?: React.Ref<HTMLInputElement>;
+}) {
   return (
     <div>
-      <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">{label}</label>
+      <label htmlFor={`f-${name}`} className="text-xs font-mono uppercase tracking-wider text-muted-foreground">{label}</label>
       <input
+        id={`f-${name}`}
+        ref={inputRef}
         required
         name={name}
         type={type}
         maxLength={255}
-        className="mt-2 w-full bg-input/40 border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-neon-purple/60 focus:ring-1 focus:ring-neon-purple/40 transition-all"
+        className={inputCls}
       />
     </div>
   );
