@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { SectionHeader } from "./About";
 import { Trophy, Users, Sprout, Target, Award, Upload, Eye, Trash2, Download } from "lucide-react";
-import { useEditMode, useLocalFile } from "@/lib/local-files";
+import { useEditMode, useLocalFile, openStored } from "@/lib/local-files";
 import { CERTIFICATES, isImageUrl, type Certificate } from "@/lib/portfolio-data";
 import { CertificateViewer, type ViewerSource } from "./CertificateViewer";
 
@@ -35,7 +35,7 @@ export function Achievements() {
   return (
     <section id="achievements" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
-        <SectionHeader eyebrow="04 — Achievements" title="Wins and recognition" />
+        <SectionHeader eyebrow="05 — Achievements" title="Wins and recognition" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
           {achievements.map((a) => (
             <div
@@ -61,7 +61,7 @@ export function Achievements() {
         <div id="certificates" className="mb-6 scroll-mt-24">
           <h3 className="text-2xl font-bold mb-2">Certifications</h3>
           <p className="text-sm text-muted-foreground">
-            Click a certificate to view it. Owner edit mode (bottom-right) lets you attach files instantly.
+            Click "View Certificate" to open each certificate in a new tab.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -98,7 +98,11 @@ function CertCard({ cert, onOpen }: { cert: Certificate; onOpen: (s: ViewerSourc
         }
       : null;
 
-  const open = () => source && onOpen(source);
+  const open = () => {
+    if (cert.fileUrl) window.open(cert.fileUrl, "_blank", "noopener,noreferrer");
+    else if (file) openStored(file);
+  };
+  void onOpen;
 
   return (
     <div

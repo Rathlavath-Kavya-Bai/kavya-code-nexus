@@ -2,10 +2,10 @@ import { SectionHeader } from "./About";
 import { Layout, Server, Database, Wrench, Heart } from "lucide-react";
 
 const groups = [
-  { icon: Layout, title: "Frontend", items: ["HTML5", "CSS3", "Bootstrap", "JavaScript", "React.js"] },
-  { icon: Server, title: "Backend", items: ["Python", "Java", "Node.js", "Express.js"] },
-  { icon: Database, title: "Database & APIs", items: ["SQLite", "REST APIs"] },
-  { icon: Wrench, title: "Tools", items: ["Git", "GitHub", "VS Code", "Postman"] },
+  { icon: Layout, title: "Frontend", items: ["HTML5", "CSS3", "Bootstrap", "JavaScript (Basics)"] },
+  { icon: Server, title: "Backend", items: ["Java", "Python (Basics)"] },
+  { icon: Database, title: "Database & APIs", items: ["SQL"] },
+  { icon: Wrench, title: "Tools", items: ["Git", "GitHub", "VS Code"] },
   { icon: Heart, title: "Soft Skills", items: ["Problem Solving", "Teamwork", "Leadership", "Communication", "Fast Learning"] },
 ];
 
