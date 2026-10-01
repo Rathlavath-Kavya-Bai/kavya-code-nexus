@@ -6,7 +6,7 @@ const timeline = [
     school: "Mohan Babu University",
     degree: "B.Tech, Computer Science Engineering",
     period: "2023 – 2027",
-    score: "CGPA: 8.9",
+    score: "CGPA: 8.81 / 10",
   },
   {
     school: "Rao's Junior College for Girls",
@@ -55,9 +55,9 @@ export function Education() {
           <div>
             <h3 className="font-semibold mb-2">Career Objective</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Seeking opportunities as a Software Developer and Full Stack Developer where I can
-              apply my technical skills, contribute to innovative projects, gain industry
-              experience, and build impactful solutions that benefit society.
+              Seeking opportunities as a Software Developer where I can apply my programming, web
+              development, problem-solving, and emerging AI skills, contribute to real-world
+              projects, and continue growing as a technology professional.
             </p>
           </div>
         </div>

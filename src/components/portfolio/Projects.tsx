@@ -1,11 +1,11 @@
 import { SectionHeader } from "./About";
-import { ExternalLink, Github, ShoppingBag, Search, Sprout, Bot, Briefcase, Lock } from "lucide-react";
+import { ExternalLink, Github, ShoppingBag, Leaf, Bot, Headset, Lock } from "lucide-react";
 import { PROJECTS } from "@/lib/portfolio-data";
 
 const icons: Record<string, typeof ShoppingBag> = {
+  "ai-customer-support": Headset,
   "nxt-trendz": ShoppingBag,
-  "wikipedia-search": Search,
-  "green-farm-coach": Sprout,
+  "zero-food-wastage": Leaf,
   "farmers-friendly": Bot,
 };
 
@@ -37,7 +37,10 @@ export function Projects() {
                       {p.category}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{p.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2 break-words">{p.title}</h3>
+                  {p.role && (
+                    <p className="text-xs font-mono text-neon-cyan mb-2">{p.role}</p>
+                  )}
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">
                     {p.description}
                   </p>
@@ -86,31 +89,6 @@ export function Projects() {
               </article>
             );
           })}
-        </div>
-
-        {/* Internship */}
-        <div id="internship" className="mt-10 glass rounded-2xl p-7 hover:neon-border transition-all scroll-mt-24">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--gradient-primary)" }}>
-              <Briefcase className="w-6 h-6 text-white" aria-hidden="true" />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold">ServiceNow Virtual Internship</h3>
-              <p className="text-xs text-muted-foreground font-mono">Virtual Intern — Training &amp; Certification</p>
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-            Completed structured ServiceNow training covering platform administration, flow
-            automation, reporting and automated test framework practices, while preparing for the
-            Certified System Administrator (CSA) track.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {["ServiceNow Administration", "Flow Automation", "Reporting", "Agentic AI", "ATF Testing", "CSA Preparation"].map((t) => (
-              <span key={t} className="px-3 py-1.5 text-xs font-mono rounded-full glass border border-border hover:border-neon-purple/50">
-                {t}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </section>

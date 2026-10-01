@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText, Trash2 } from "lucide-react";
-import { useEditMode, useLocalFile, downloadStored, openStored } from "@/lib/local-files";
-import { EMAIL, RESUME_URL } from "@/lib/portfolio-data";
+import { Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText, Trash2 } from "lucide-react";
+import { useEditMode, useLocalFile, openStored } from "@/lib/local-files";
+import { RESUME_URL } from "@/lib/portfolio-data";
 
 const roles = [
-  "Full Stack Developer",
-  "React Developer",
+  "Software Developer",
   "AI Enthusiast",
   "Startup Innovator",
   "Problem Solver",
@@ -13,7 +12,7 @@ const roles = [
 
 const TYPE_SPEED = 80;
 const DELETE_SPEED = 40;
-const HOLD_MS = 1500;
+const HOLD_MS = 1800;
 
 function TypingText() {
   const [index, setIndex] = useState(0);
@@ -137,6 +136,7 @@ export function Hero() {
           </a>
           <a
             href="#contact"
+            onClick={() => window.dispatchEvent(new CustomEvent("portfolio:hire"))}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
           >
             <Briefcase className="w-4 h-4" /> Hire Me
@@ -158,34 +158,14 @@ function ResumeButtons() {
   return (
     <>
       {RESUME_URL ? (
-        <>
-          <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className={btn}>
-            <FileText className="w-4 h-4" /> View Resume
-          </a>
-          <a href={RESUME_URL} download className={btn}>
-            <Download className="w-4 h-4" /> Download Resume
-          </a>
-        </>
+        <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className={btn}>
+          <FileText className="w-4 h-4" /> Resume
+        </a>
       ) : file ? (
-        <>
-          <button onClick={() => openStored(file)} className={btn}>
-            <FileText className="w-4 h-4" /> View Resume
-          </button>
-          <button onClick={() => downloadStored(file)} className={btn}>
-            <Download className="w-4 h-4" /> Download Resume
-          </button>
-        </>
-      ) : (
-        !enabled && (
-          <a
-            href={`mailto:${EMAIL}?subject=Resume%20Request`}
-            className={btn}
-            aria-label="Request resume by email"
-          >
-            <FileText className="w-4 h-4" /> Request Resume
-          </a>
-        )
-      )}
+        <button onClick={() => openStored(file)} className={btn}>
+          <FileText className="w-4 h-4" /> Resume
+        </button>
+      ) : null}
       {enabled && (
         <>
           <button

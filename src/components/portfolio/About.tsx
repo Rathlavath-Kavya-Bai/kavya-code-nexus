@@ -2,9 +2,9 @@ import { GraduationCap, Award, Code2, Sparkles, Rocket, Users, Trophy, Brain } f
 
 const stats = [
   { icon: GraduationCap, label: "B.Tech CSE Student", value: "Mohan Babu University" },
-  { icon: Award, label: "CGPA", value: "8.9 / 10" },
+  { icon: Award, label: "CGPA", value: "8.81 / 10" },
   { icon: Sparkles, label: "Graduation", value: "2027" },
-  { icon: Code2, label: "Role", value: "Full Stack Developer" },
+  { icon: Code2, label: "Role", value: "Software Developer" },
   { icon: Brain, label: "Focus", value: "AI Enthusiast" },
   { icon: Rocket, label: "Identity", value: "Startup Innovator" },
   { icon: Users, label: "Position", value: "Coding Club Coordinator" },

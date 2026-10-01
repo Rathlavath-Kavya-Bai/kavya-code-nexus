@@ -21,12 +21,12 @@
 export const GITHUB_PROFILE = "https://github.com/Rathlavath-Kavya-Bai";
 export const LINKEDIN_PROFILE =
   "https://www.linkedin.com/in/rathlavath-kavya-bai-2a534a376";
-export const EMAIL = "kavyabairathlavth@gmail.com";
+export const EMAIL = "kavyabairathlavath@gmail.com";
 export const PHONE = "+919391601350";
 export const PHONE_DISPLAY = "+91 93916 01350";
 
 /** Set once the real PDF exists in public/resume/. Empty = not uploaded yet. */
-export const RESUME_URL = "";
+export const RESUME_URL = "/resume/Rathlavath_Kavya_Bai_Fresher_Resume.pdf";
 
 export type Project = {
   id: string;
@@ -36,10 +36,22 @@ export type Project = {
   githubUrl: string;
   liveUrl: string;
   category: string;
+  role?: string;
   featured?: boolean;
 };
 
 export const PROJECTS: Project[] = [
+  {
+    id: "ai-customer-support",
+    title: "AI-Powered Customer Support & Service Automation",
+    role: "Team Lead — 5-member team",
+    description:
+      "Built a Salesforce-based service automation system using Service Cloud, Flow Builder, Prompt Builder and Agentforce to automate case management, queue routing and warranty approvals for a customer support workflow.",
+    technologies: ["Salesforce", "Service Cloud", "Flow Builder", "Prompt Builder", "Agentforce"],
+    githubUrl: "",
+    liveUrl: "",
+    category: "Salesforce / AI",
+  },
   {
     id: "nxt-trendz",
     title: "Nxt Trendz E-Commerce Application",
@@ -48,27 +60,17 @@ export const PROJECTS: Project[] = [
     technologies: ["React.js", "JavaScript", "Bootstrap", "CSS", "REST APIs", "JWT"],
     githubUrl: "",
     liveUrl: "",
-    category: "Full Stack",
+    category: "Web App",
   },
   {
-    id: "wikipedia-search",
-    title: "Wikipedia Search Application",
+    id: "zero-food-wastage",
+    title: "Zero Food Wastage",
     description:
-      "Responsive search platform that fetches and displays Wikipedia results in real time via API integration.",
-    technologies: ["HTML", "CSS", "JavaScript", "Bootstrap", "REST APIs"],
+      "A solution idea aimed at reducing food wastage, developed and presented as part of the X-Horizon Hackathon.",
+    technologies: ["X-Horizon Hackathon"],
     githubUrl: "",
     liveUrl: "",
-    category: "Frontend",
-  },
-  {
-    id: "green-farm-coach",
-    title: "Green Farm Coach",
-    description:
-      "Farmer-support application providing crop prediction, weather updates and fertilizer recommendations.",
-    technologies: ["HTML", "CSS", "Python", "AI Concepts"],
-    githubUrl: "",
-    liveUrl: "",
-    category: "AI / AgriTech",
+    category: "Hackathon",
   },
   {
     id: "farmers-friendly",
@@ -96,9 +98,7 @@ export const CERTIFICATES: Certificate[] = [
   { id: "dbms-nptel", title: "Database Management Systems", issuer: "NPTEL", fileUrl: "" },
   { id: "js-simplilearn", title: "JavaScript Fundamentals", issuer: "Simplilearn", fileUrl: "" },
   { id: "html-udemy", title: "HTML for Beginners", issuer: "Udemy", fileUrl: "" },
-  { id: "agritech-hackathon", title: "National AgriTech Hackathon", issuer: "Participation", fileUrl: "" },
-  { id: "x-horizon", title: "X-Horizon Participation Certificate", issuer: "X-Horizon", fileUrl: "" },
-  { id: "servicenow", title: "ServiceNow Micro-Certification", issuer: "ServiceNow", fileUrl: "" },
+  { id: "servicenow-welcome", title: "Welcome to ServiceNow", issuer: "ServiceNow · January 2026", fileUrl: "" },
 ];
 
 export function isImageUrl(url: string) {
