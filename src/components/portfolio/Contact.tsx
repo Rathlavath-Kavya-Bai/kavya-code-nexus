@@ -75,14 +75,12 @@ export function Contact() {
                 subject: subject.trim(),
                 message: String(fd.get("message") || "").trim(),
               };
-              if (!values.name || !values.email || !values.subject || !values.message) {
+              const errs = validate(values);
+              setErrors(errs);
+              if (Object.keys(errs).length) {
                 setStatus("error");
-                setNote("Please fill in all fields.");
-                return;
-              }
-              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-                setStatus("error");
-                setNote("Please enter a valid email address.");
+                setNote("Please fix the highlighted fields below.");
+                form.querySelector<HTMLElement>(`[name="${Object.keys(errs)[0]}"]`)?.focus();
                 return;
               }
               setStatus("sending");
@@ -91,7 +89,7 @@ export function Contact() {
                 const res = await send({ data: values });
                 if (res.ok) {
                   setStatus("success");
-                  setNote("Message sent successfully!");
+                  setNote("Message sent successfully! I'll get back to you soon.");
                   form.reset();
                   setSubject("");
                 } else {
@@ -100,45 +98,59 @@ export function Contact() {
                 }
               } catch {
                 setStatus("error");
-                setNote("Could not send your message. Please try again.");
+                setNote("Could not send your message. Please check your connection and try again.");
               }
+            }}
+            onChange={(e) => {
+              const n = (e.target as HTMLInputElement).name as keyof Errors;
+              if (errors[n]) setErrors((p) => ({ ...p, [n]: undefined }));
+              if (status === "success") { setStatus("idle"); setNote(""); }
             }}
           >
             <div className="grid md:grid-cols-2 gap-4">
-              <Field label="Name" name="name" type="text" inputRef={nameRef} />
-              <Field label="Email" name="email" type="email" />
+              <Field label="Name" name="name" type="text" inputRef={nameRef} error={errors.name} />
+              <Field label="Email" name="email" type="email" error={errors.email} />
             </div>
             <div>
               <label htmlFor="f-subject" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Subject</label>
               <input
                 id="f-subject"
-                required
                 name="subject"
                 type="text"
                 maxLength={150}
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className={inputCls}
+                aria-invalid={!!errors.subject}
+                aria-describedby={errors.subject ? "f-subject-err" : undefined}
+                className={`${inputCls} ${errors.subject ? errCls : ""}`}
               />
+              <FieldError id="f-subject-err" msg={errors.subject} />
             </div>
             <div>
               <label htmlFor="f-message" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Message</label>
               <textarea
                 id="f-message"
-                required
                 name="message"
                 rows={5}
                 maxLength={2000}
-                className={inputCls}
+                aria-invalid={!!errors.message}
+                aria-describedby={errors.message ? "f-message-err" : undefined}
+                className={`${inputCls} ${errors.message ? errCls : ""}`}
               />
+              <FieldError id="f-message-err" msg={errors.message} />
             </div>
             {note && (
-              <p
-                role="status"
-                className={`text-sm ${status === "success" ? "text-neon-cyan" : "text-destructive"}`}
+              <div
+                role={status === "success" ? "status" : "alert"}
+                className={`flex items-start gap-2 rounded-xl border-2 px-4 py-3 text-sm ${
+                  status === "success"
+                    ? "border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan"
+                    : "border-destructive/50 bg-destructive/10 text-destructive"
+                }`}
               >
-                {note}
-              </p>
+                {status === "success" ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />}
+                <span>{note}</span>
+              </div>
             )}
             <div className="flex flex-wrap gap-3 pt-2">
               <button
