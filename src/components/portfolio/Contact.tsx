@@ -1,9 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { SectionHeader } from "./About";
-import { Mail, Phone, Linkedin, Github, Send, Briefcase } from "lucide-react";
+import { Mail, Phone, Linkedin, Github, Send, Briefcase, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { EMAIL, PHONE, PHONE_DISPLAY, GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
 import { sendContactMessage } from "@/lib/contact.functions";
+
+type Errors = Partial<Record<"name" | "email" | "subject" | "message", string>>;
+
+function validate(v: { name: string; email: string; subject: string; message: string }): Errors {
+  const e: Errors = {};
+  if (!v.name) e.name = "Please enter your name.";
+  else if (v.name.length < 2) e.name = "Name must be at least 2 characters.";
+  if (!v.email) e.email = "Please enter your email.";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = "Please enter a valid email, like name@example.com.";
+  if (!v.subject) e.subject = "Please add a subject.";
+  if (!v.message) e.message = "Please write a message.";
+  else if (v.message.length < 10) e.message = "Message must be at least 10 characters.";
+  return e;
+}
 
 const HIRE_SUBJECT = "Job Opportunity / Hiring Inquiry";
 
@@ -12,6 +26,7 @@ export function Contact() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [note, setNote] = useState("");
   const [subject, setSubject] = useState("");
+  const [errors, setErrors] = useState<Errors>({});
   const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
@@ -75,14 +90,12 @@ export function Contact() {
                 subject: subject.trim(),
                 message: String(fd.get("message") || "").trim(),
               };
-              if (!values.name || !values.email || !values.subject || !values.message) {
+              const errs = validate(values);
+              setErrors(errs);
+              if (Object.keys(errs).length) {
                 setStatus("error");
-                setNote("Please fill in all fields.");
-                return;
-              }
-              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-                setStatus("error");
-                setNote("Please enter a valid email address.");
+                setNote("Please fix the highlighted fields above.");
+                form.querySelector<HTMLElement>(`[name="${Object.keys(errs)[0]}"]`)?.focus();
                 return;
               }
               setStatus("sending");
@@ -91,7 +104,7 @@ export function Contact() {
                 const res = await send({ data: values });
                 if (res.ok) {
                   setStatus("success");
-                  setNote("Message sent successfully!");
+                  setNote("Message sent successfully! I'll get back to you soon.");
                   form.reset();
                   setSubject("");
                 } else {
@@ -100,45 +113,59 @@ export function Contact() {
                 }
               } catch {
                 setStatus("error");
-                setNote("Could not send your message. Please try again.");
+                setNote("Could not send your message. Please check your connection and try again.");
               }
+            }}
+            onChange={(e) => {
+              const n = (e.target as unknown as HTMLInputElement).name as keyof Errors;
+              if (errors[n]) setErrors((p) => ({ ...p, [n]: undefined }));
+              if (status === "success") { setStatus("idle"); setNote(""); }
             }}
           >
             <div className="grid md:grid-cols-2 gap-4">
-              <Field label="Name" name="name" type="text" inputRef={nameRef} />
-              <Field label="Email" name="email" type="email" />
+              <Field label="Name" name="name" type="text" inputRef={nameRef} error={errors.name} />
+              <Field label="Email" name="email" type="email" error={errors.email} />
             </div>
             <div>
               <label htmlFor="f-subject" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Subject</label>
               <input
                 id="f-subject"
-                required
                 name="subject"
                 type="text"
                 maxLength={150}
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className={inputCls}
+                aria-invalid={!!errors.subject}
+                aria-describedby={errors.subject ? "f-subject-err" : undefined}
+                className={`${inputCls} ${errors.subject ? errCls : ""}`}
               />
+              <FieldError id="f-subject-err" msg={errors.subject} />
             </div>
             <div>
               <label htmlFor="f-message" className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Message</label>
               <textarea
                 id="f-message"
-                required
                 name="message"
                 rows={5}
                 maxLength={2000}
-                className={inputCls}
+                aria-invalid={!!errors.message}
+                aria-describedby={errors.message ? "f-message-err" : undefined}
+                className={`${inputCls} ${errors.message ? errCls : ""}`}
               />
+              <FieldError id="f-message-err" msg={errors.message} />
             </div>
             {note && (
-              <p
-                role="status"
-                className={`text-sm ${status === "success" ? "text-neon-cyan" : "text-destructive"}`}
+              <div
+                role={status === "success" ? "status" : "alert"}
+                className={`flex items-start gap-2 rounded-xl border-2 px-4 py-3 text-sm ${
+                  status === "success"
+                    ? "border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan"
+                    : "border-destructive/50 bg-destructive/10 text-destructive"
+                }`}
               >
-                {note}
-              </p>
+                {status === "success" ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" /> : <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />}
+                <span>{note}</span>
+              </div>
             )}
             <div className="flex flex-wrap gap-3 pt-2">
               <button
@@ -147,7 +174,7 @@ export function Contact() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white animate-glow-pulse disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ background: "var(--gradient-primary)" }}
               >
-                <Send className="w-4 h-4" />
+                {status === "sending" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {status === "sending" ? "Sending..." : "Send Message"}
               </button>
               <button
@@ -168,16 +195,29 @@ export function Contact() {
 const inputCls =
   "mt-2 w-full bg-input/40 border-2 border-muted-foreground/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-neon-purple/70 focus:ring-1 focus:ring-neon-purple/40 transition-all";
 
+const errCls = "!border-destructive/70 focus:!border-destructive";
+
+function FieldError({ id, msg }: { id: string; msg?: string }) {
+  if (!msg) return null;
+  return (
+    <p id={id} className="mt-1.5 flex items-center gap-1.5 text-xs text-destructive">
+      <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {msg}
+    </p>
+  );
+}
+
 function Field({
   label,
   name,
   type,
   inputRef,
+  error,
 }: {
   label: string;
   name: string;
   type: string;
   inputRef?: React.Ref<HTMLInputElement>;
+  error?: string;
 }) {
   return (
     <div>
@@ -185,12 +225,14 @@ function Field({
       <input
         id={`f-${name}`}
         ref={inputRef}
-        required
         name={name}
         type={type}
         maxLength={255}
-        className={inputCls}
+        aria-invalid={!!error}
+        aria-describedby={error ? `f-${name}-err` : undefined}
+        className={`${inputCls} ${error ? errCls : ""}`}
       />
+      <FieldError id={`f-${name}-err`} msg={error} />
     </div>
   );
 }
