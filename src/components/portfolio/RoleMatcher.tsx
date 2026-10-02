@@ -1,9 +1,28 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Sparkles, Loader2, FolderGit2, Wrench, AlertCircle } from "lucide-react";
+import { Sparkles, Loader2, FolderGit2, Wrench, AlertCircle, Zap } from "lucide-react";
 import { SectionHeader } from "./About";
 import { matchRole, type MatchResult } from "@/lib/match.functions";
 import { PROJECTS } from "@/lib/portfolio-data";
+
+const SAMPLE_ROLES = [
+  {
+    label: "Junior Java Developer",
+    text: "Junior Software Developer — Java, SQL, Git. Building and maintaining customer-facing web applications, writing clean code, and collaborating in an agile team.",
+  },
+  {
+    label: "Frontend React Intern",
+    text: "Frontend Developer Intern — React, TypeScript, Tailwind CSS. Building responsive, accessible UI components and integrating REST APIs.",
+  },
+  {
+    label: "Full Stack Developer",
+    text: "Full Stack Developer — Node.js, Express, MongoDB, React. Designing REST APIs, managing databases, and deploying end-to-end web applications.",
+  },
+  {
+    label: "AI / ML Associate",
+    text: "AI Associate — Python, machine learning fundamentals, prompt engineering, and building AI-powered features such as chatbots and recommendation systems.",
+  },
+];
 
 export function RoleMatcher() {
   const run = useServerFn(matchRole);
