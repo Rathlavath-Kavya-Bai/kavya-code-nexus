@@ -1,13 +1,10 @@
 import { SectionHeader } from "./About";
 import { Layout, Server, Database, Wrench, Heart } from "lucide-react";
 
-const groups = [
-  { icon: Layout, title: "Frontend", items: ["HTML5", "CSS3", "Bootstrap", "JavaScript (Basics)"] },
-  { icon: Server, title: "Backend", items: ["Java", "Python (Basics)"] },
-  { icon: Database, title: "Database & APIs", items: ["SQL"] },
-  { icon: Wrench, title: "Tools", items: ["Git", "GitHub", "VS Code"] },
-  { icon: Heart, title: "Soft Skills", items: ["Problem Solving", "Teamwork", "Leadership", "Communication", "Fast Learning"] },
-];
+import { SKILL_GROUPS } from "@/lib/skills-data";
+
+const icons = [Layout, Server, Database, Wrench, Heart];
+const groups = SKILL_GROUPS.map((g, i) => ({ ...g, icon: icons[i] ?? Heart }));
 
 export function Skills() {
   return (
