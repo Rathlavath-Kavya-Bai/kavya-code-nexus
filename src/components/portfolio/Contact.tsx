@@ -94,7 +94,7 @@ export function Contact() {
               setErrors(errs);
               if (Object.keys(errs).length) {
                 setStatus("error");
-                setNote("Please fix the highlighted fields below.");
+                setNote("Please fix the highlighted fields above.");
                 form.querySelector<HTMLElement>(`[name="${Object.keys(errs)[0]}"]`)?.focus();
                 return;
               }
@@ -195,7 +195,7 @@ export function Contact() {
 const inputCls =
   "mt-2 w-full bg-input/40 border-2 border-muted-foreground/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-neon-purple/70 focus:ring-1 focus:ring-neon-purple/40 transition-all";
 
-const errCls = "border-destructive/70 focus:border-destructive";
+const errCls = "!border-destructive/70 focus:!border-destructive";
 
 function FieldError({ id, msg }: { id: string; msg?: string }) {
   if (!msg) return null;
