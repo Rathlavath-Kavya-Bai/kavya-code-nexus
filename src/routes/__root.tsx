@@ -78,14 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Rathlavath Kavya Bai — Software Developer" },
+      { name: "description", content: "Software development portfolio of Rathlavath Kavya Bai." },
+      { name: "author", content: "Rathlavath Kavya Bai" },
+      { property: "og:title", content: "Rathlavath Kavya Bai — Software Developer" },
+      { property: "og:description", content: "Projects, skills, internships, achievements and contact details." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {

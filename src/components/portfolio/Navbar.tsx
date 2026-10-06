@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { Code2, Sun, Moon, Download, Upload, FileText, Linkedin, Github } from "lucide-react";
-import { useEditMode, useLocalFile, downloadStored } from "@/lib/local-files";
+import { useEffect, useState } from "react";
+import { Code2, Sun, Moon, FileText, Linkedin, Github } from "lucide-react";
+import { usePortfolioAssets } from "@/lib/portfolio-assets";
 import { GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
 
 const links = [
@@ -122,46 +122,19 @@ export function Navbar() {
 }
 
 function ResumeNavButton() {
-  const { enabled } = useEditMode();
-  const { file, save } = useLocalFile("portfolio.resume");
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  if (file) {
+  const { assets } = usePortfolioAssets();
+  const resume = assets.resume;
+  if (resume) {
     return (
-      <button
-        onClick={() => downloadStored(file)}
+      <a
+        href={resume.url}
+        target="_blank"
+        rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow transition-all"
       >
-        <Download className="w-3.5 h-3.5" /> Resume
-      </button>
+        <FileText className="w-3.5 h-3.5" /> Resume
+      </a>
     );
   }
-  if (enabled) {
-    return (
-      <>
-        <button
-          onClick={() => inputRef.current?.click()}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow transition-all"
-        >
-          <Upload className="w-3.5 h-3.5" /> Upload Resume
-        </button>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="application/pdf,image/*"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) save(f);
-            e.target.value = "";
-          }}
-        />
-      </>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium glass text-muted-foreground">
-      <FileText className="w-3.5 h-3.5" /> Resume soon
-    </span>
-  );
+  return null;
 }

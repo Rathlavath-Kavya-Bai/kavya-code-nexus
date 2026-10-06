@@ -5,13 +5,13 @@ import { About } from "@/components/portfolio/About";
 import { Skills } from "@/components/portfolio/Skills";
 import { Internship } from "@/components/portfolio/Internship";
 import { Projects } from "@/components/portfolio/Projects";
-import { RoleMatcher } from "@/components/portfolio/RoleMatcher";
 import { Achievements } from "@/components/portfolio/Achievements";
 import { Education } from "@/components/portfolio/Education";
 import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
 import { EditToggle } from "@/components/portfolio/EditToggle";
 import { BackToTop } from "@/components/portfolio/BackToTop";
+import { PortfolioAssetsProvider } from "@/lib/portfolio-assets";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Rathlavath Kavya Bai — Full Stack Developer & AI Enthusiast" },
       { property: "og:description", content: "Turning ideas into meaningful technology solutions." },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:url", content: "/" },
     ],
     links: [{ rel: "canonical", href: "/" }],
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
+    <PortfolioAssetsProvider>
     <div className="relative min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
@@ -42,7 +44,6 @@ function Index() {
         <Skills />
         <Internship />
         <Projects />
-        <RoleMatcher />
         <Achievements />
         <Education />
         <Contact />
@@ -51,5 +52,6 @@ function Index() {
       <EditToggle />
       <BackToTop />
     </div>
+    </PortfolioAssetsProvider>
   );
 }

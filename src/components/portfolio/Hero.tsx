@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText, Trash2 } from "lucide-react";
-import { useEditMode, useLocalFile, openStored } from "@/lib/local-files";
-import { RESUME_URL } from "@/lib/portfolio-data";
+import { Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText } from "lucide-react";
+import { usePortfolioAssets } from "@/lib/portfolio-assets";
 
 const roles = [
   "Software Developer",
@@ -151,48 +150,41 @@ const btn =
   "inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan";
 
 function ResumeButtons() {
-  const { enabled } = useEditMode();
-  const { file, save, clear } = useLocalFile("portfolio.resume");
+  const { assets, isOwner, uploadingKey, upload } = usePortfolioAssets();
   const inputRef = useRef<HTMLInputElement>(null);
+  const resume = assets.resume;
+  const busy = uploadingKey === "resume";
 
   return (
     <>
-      {RESUME_URL ? (
-        <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className={btn}>
+      {resume ? (
+        <a href={resume.url} target="_blank" rel="noopener noreferrer" className={btn}>
           <FileText className="w-4 h-4" /> Resume
         </a>
-      ) : file ? (
-        <button onClick={() => openStored(file)} className={btn}>
-          <FileText className="w-4 h-4" /> Resume
+      ) : isOwner ? (
+        <button type="button" onClick={() => inputRef.current?.click()} className={btn}>
+          <Upload className="w-4 h-4" /> Add Resume
         </button>
       ) : null}
-      {enabled && (
+      {isOwner && (
         <>
-          <button
+          {resume && <button
+            type="button"
             onClick={() => inputRef.current?.click()}
+            disabled={busy}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
           >
-            <Upload className="w-4 h-4" /> {file ? "Replace Resume" : "Upload Resume"}
-          </button>
-          {file && (
-            <button
-              onClick={clear}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-full text-sm font-medium glass hover:border-destructive/60 transition-all"
-              aria-label="Remove resume"
-              title="Remove resume"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
+            <Upload className="w-4 h-4" /> {busy ? "Uploading…" : "Replace Resume"}
+          </button>}
           <input
             ref={inputRef}
             type="file"
-            accept="application/pdf,image/*"
+            accept="application/pdf"
             className="hidden"
             aria-label="Upload resume file"
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) save(f);
+              if (f) void upload("resume", f);
               e.target.value = "";
             }}
           />

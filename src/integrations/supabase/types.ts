@@ -14,7 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      portfolio_assets: {
+        Row: {
+          asset_key: string
+          file_name: string
+          mime_type: string
+          public_url: string
+          storage_path: string
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          asset_key: string
+          file_name: string
+          mime_type: string
+          public_url: string
+          storage_path: string
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          asset_key?: string
+          file_name?: string
+          mime_type?: string
+          public_url?: string
+          storage_path?: string
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
