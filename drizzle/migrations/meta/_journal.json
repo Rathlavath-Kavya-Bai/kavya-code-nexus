@@ -8,6 +8,13 @@
       "when": 1791277788725,
       "tag": "0000_create_portfolio_assets",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791277822859,
+      "tag": "0001_secure_portfolio_file_storage",
+      "breakpoints": true
     }
   ]
 }
