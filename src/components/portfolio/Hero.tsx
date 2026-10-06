@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText, Trash2 } from "lucide-react";
+import { Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText } from "lucide-react";
 import { usePortfolioAssets } from "@/lib/portfolio-assets";
 
 const roles = [

@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { SectionHeader } from "./About";
-import { Trophy, Users, Sprout, Target, Award, Upload, Eye, Trash2, Download } from "lucide-react";
-import { useEditMode, useLocalFile, openStored } from "@/lib/local-files";
-import { CERTIFICATES, isImageUrl, type Certificate } from "@/lib/portfolio-data";
-import { CertificateViewer, type ViewerSource } from "./CertificateViewer";
+import { Trophy, Users, Sprout, Target, Award, Upload, Eye, Loader2 } from "lucide-react";
+import { usePortfolioAssets } from "@/lib/portfolio-assets";
+import { CERTIFICATES, type Certificate } from "@/lib/portfolio-data";
 
 const achievements = [
   {
@@ -30,8 +29,6 @@ const achievements = [
 ];
 
 export function Achievements() {
-  const [viewer, setViewer] = useState<ViewerSource | null>(null);
-
   return (
     <section id="achievements" className="relative py-24 px-6 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
@@ -66,98 +63,43 @@ export function Achievements() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {CERTIFICATES.map((c) => (
-            <CertCard key={c.id} cert={c} onOpen={setViewer} />
+            <CertCard key={c.id} cert={c} />
           ))}
         </div>
       </div>
-
-      <CertificateViewer source={viewer} onClose={() => setViewer(null)} />
     </section>
   );
 }
 
-function CertCard({ cert, onOpen }: { cert: Certificate; onOpen: (s: ViewerSource) => void }) {
-  const { enabled } = useEditMode();
-  const { file, save, clear } = useLocalFile(`portfolio.cert.${cert.id}`);
+function CertCard({ cert }: { cert: Certificate }) {
+  const { assets, isOwner, uploadingKey, upload } = usePortfolioAssets();
   const inputRef = useRef<HTMLInputElement>(null);
-
   const label = `${cert.title} — ${cert.issuer}`;
-  const source: ViewerSource | null = cert.fileUrl
-    ? {
-        title: label,
-        url: cert.fileUrl,
-        isImage: isImageUrl(cert.fileUrl),
-        fileName: cert.fileUrl.split("/").pop() || `${cert.id}.pdf`,
-      }
-    : file
-      ? {
-          title: label,
-          url: file.dataUrl,
-          isImage: file.type.startsWith("image/"),
-          fileName: file.name,
-        }
-      : null;
-
-  const open = () => {
-    if (cert.fileUrl) window.open(cert.fileUrl, "_blank", "noopener,noreferrer");
-    else if (file) openStored(file);
-  };
-  void onOpen;
+  const key = `certificate-${cert.id}`;
+  const source = assets[key];
+  const busy = uploadingKey === key;
 
   return (
     <div
-      className={`glass rounded-xl p-4 flex items-start gap-3 transition-all ${
-        source ? "hover:neon-border cursor-pointer" : "hover:border-border/80"
-      }`}
-      role={source ? "button" : undefined}
-      tabIndex={source ? 0 : undefined}
-      aria-label={source ? `View certificate: ${label}` : undefined}
-      onClick={open}
-      onKeyDown={(e) => {
-        if (source && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          open();
-        }
-      }}
+      className="glass rounded-xl p-4 flex items-start gap-3 transition-all hover:border-border/80"
     >
       <Award className={`w-5 h-5 flex-shrink-0 mt-0.5 ${source ? "text-neon-cyan" : "text-muted-foreground"}`} aria-hidden="true" />
       <div className="flex-1 min-w-0">
         <div className="text-sm">{cert.title}</div>
         <div className="text-[11px] text-muted-foreground">{cert.issuer}</div>
-        {source && (
-          <div className="text-[10px] font-mono text-neon-cyan mt-1 flex items-center gap-1.5">
+        {source && <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-mono text-neon-cyan mt-2 inline-flex items-center gap-1.5 hover:underline">
             <Eye className="w-3 h-3" /> View Certificate
-          </div>
-        )}
-        {!source && !enabled && (
-          <div className="text-[10px] font-mono text-muted-foreground mt-1">Certificate pending upload</div>
-        )}
-        {enabled && (
-          <div className="mt-2 flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
+          </a>}
+        {isOwner && (
+          <div className="mt-2 flex flex-wrap gap-2">
             <button
+              type="button"
               onClick={() => inputRef.current?.click()}
+              disabled={busy}
               className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-md glass border border-border hover:border-neon-purple/60"
             >
-              <Upload className="w-3 h-3" /> {file ? "Replace" : "Upload"}
+              {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {source ? "Replace" : "Upload"}
             </button>
-            {file && (
-              <>
-                <a
-                  href={file.dataUrl}
-                  download={file.name}
-                  className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-md glass border border-border hover:border-neon-purple/60"
-                >
-                  <Download className="w-3 h-3" /> Download
-                </a>
-                <button
-                  onClick={clear}
-                  aria-label={`Remove uploaded file for ${cert.title}`}
-                  className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-md glass border border-border hover:border-destructive/60"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </>
-            )}
             <input
               ref={inputRef}
               type="file"
@@ -166,7 +108,7 @@ function CertCard({ cert, onOpen }: { cert: Certificate; onOpen: (s: ViewerSourc
               aria-label={`Upload certificate for ${cert.title}`}
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) save(f);
+                if (f) void upload(key, f);
                 e.target.value = "";
               }}
             />
