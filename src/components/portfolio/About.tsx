@@ -1,4 +1,6 @@
-import { GraduationCap, Award, Code2, Sparkles, Rocket, Users, Trophy, Brain } from "lucide-react";
+import { useRef } from "react";
+import { GraduationCap, Award, Code2, Sparkles, Rocket, Users, Trophy, Brain, Camera, Loader2, UserRound } from "lucide-react";
+import { usePortfolioAssets } from "@/lib/portfolio-assets";
 
 const stats = [
   { icon: GraduationCap, label: "B.Tech CSE Student", value: "Mohan Babu University" },
@@ -21,12 +23,12 @@ export function About() {
           <div className="lg:col-span-3 space-y-5 text-muted-foreground leading-relaxed">
             <p>
               Hi, I'm <span className="text-foreground font-semibold">Rathlavath Kavya Bai</span>,
-              a Computer Science Engineering student from Andhra Pradesh with a strong passion for
-              software development, artificial intelligence, and innovation.
+              a Computer Science and Engineering student with hands-on experience in software
+              development, web technologies, AI-powered solutions, and platform-based applications.
             </p>
             <p>
-              I enjoy building modern web applications that solve real-world problems. My interests
-              include Full Stack Development, AI-powered solutions, and technology for social impact.
+              I am interested in building practical solutions, solving real-world problems, and
+              continuously learning new technologies.
             </p>
             <p>
               I am the creator of{" "}
@@ -40,7 +42,9 @@ export function About() {
             </p>
           </div>
 
-          <div className="lg:col-span-2 grid grid-cols-2 gap-3">
+          <div className="lg:col-span-2 space-y-5">
+            <ProfilePhoto />
+            <div className="grid grid-cols-2 gap-3">
             {stats.map((s) => (
               <div
                 key={s.label}
@@ -53,10 +57,41 @@ export function About() {
                 <div className="text-sm font-semibold text-foreground mt-1">{s.value}</div>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function ProfilePhoto() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { assets, isOwner, uploadingKey, upload } = usePortfolioAssets();
+  const photo = assets.profilePhoto;
+  const busy = uploadingKey === "profilePhoto";
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-full max-w-72 aspect-square rounded-full neon-border overflow-hidden glass-strong">
+        {photo ? (
+          <img src={photo.url} alt="Rathlavath Kavya Bai" className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center" aria-label="Profile photo not added">
+            <UserRound className="w-24 h-24 text-muted-foreground/50" />
+          </div>
+        )}
+        {busy && <div className="absolute inset-0 glass-strong flex items-center justify-center"><Loader2 className="w-7 h-7 animate-spin text-neon-cyan" /></div>}
+      </div>
+      {isOwner && (
+        <>
+          <button type="button" onClick={() => inputRef.current?.click()} disabled={busy} className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow disabled:opacity-60">
+            <Camera className="w-4 h-4" /> {photo ? "Update Photo" : "Add Photo"}
+          </button>
+          <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" aria-label={photo ? "Update profile photo" : "Add profile photo"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void upload("profilePhoto", file); e.target.value = ""; }} />
+        </>
+      )}
+    </div>
   );
 }
 
