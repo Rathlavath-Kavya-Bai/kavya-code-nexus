@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { Mail, Briefcase, ArrowRight, Sparkles, Upload, FileText } from "lucide-react";
-import { usePortfolioAssets } from "@/lib/portfolio-assets";
+import { useEffect, useState } from "react";
+import { Mail, Briefcase, ArrowRight, Sparkles } from "lucide-react";
+import { ResumeButton } from "./ResumeButton";
 
 const roles = [
   "Software Developer",
@@ -125,7 +125,7 @@ export function Hero() {
             View Projects
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
-          <ResumeButtons />
+          <ResumeButton />
 
           <a
             href="#contact"
@@ -146,50 +146,3 @@ export function Hero() {
   );
 }
 
-const btn =
-  "inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium glass hover:neon-border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan";
-
-function ResumeButtons() {
-  const { assets, isOwner, uploadingKey, upload } = usePortfolioAssets();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const resume = assets.resume;
-  const busy = uploadingKey === "resume";
-
-  return (
-    <>
-      {resume ? (
-        <a href={resume.url} target="_blank" rel="noopener noreferrer" className={btn}>
-          <FileText className="w-4 h-4" /> Resume
-        </a>
-      ) : isOwner ? (
-        <button type="button" onClick={() => inputRef.current?.click()} className={btn}>
-          <Upload className="w-4 h-4" /> Add Resume
-        </button>
-      ) : null}
-      {isOwner && (
-        <>
-          {resume && <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={busy}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
-          >
-            <Upload className="w-4 h-4" /> {busy ? "Uploading…" : "Replace Resume"}
-          </button>}
-          <input
-            ref={inputRef}
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            aria-label="Upload resume file"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) void upload("resume", f);
-              e.target.value = "";
-            }}
-          />
-        </>
-      )}
-    </>
-  );
-}
