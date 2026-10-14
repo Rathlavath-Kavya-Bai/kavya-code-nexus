@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { GraduationCap, Award, Code2, Sparkles, Rocket, Users, Trophy, Brain, Camera, Loader2, UserRound } from "lucide-react";
 import { usePortfolioAssets } from "@/lib/portfolio-assets";
+import { Button } from "@/components/ui/button";
 
 const stats = [
   { icon: GraduationCap, label: "B.Tech CSE Student", value: "Mohan Babu University" },
@@ -85,9 +86,9 @@ function ProfilePhoto() {
       </div>
       {isOwner && (
         <>
-          <button type="button" onClick={() => inputRef.current?.click()} disabled={busy} className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow disabled:opacity-60">
+          <Button variant="ghost" type="button" onClick={() => inputRef.current?.click()} disabled={busy} className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow disabled:opacity-60">
             <Camera className="w-4 h-4" /> {photo ? "Update Photo" : "Add Photo"}
-          </button>
+          </Button>
           <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" aria-label={photo ? "Update profile photo" : "Add profile photo"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void upload("profilePhoto", file); e.target.value = ""; }} />
         </>
       )}
