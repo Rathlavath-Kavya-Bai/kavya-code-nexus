@@ -4,6 +4,7 @@ import { SectionHeader } from "./About";
 import { Mail, Phone, Linkedin, Github, Send, Briefcase, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { EMAIL, PHONE, PHONE_DISPLAY, GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
 import { sendContactMessage } from "@/lib/contact.functions";
+import { Button } from "@/components/ui/button";
 
 type Errors = Partial<Record<"name" | "email" | "subject" | "message", string>>;
 
@@ -29,6 +30,7 @@ export function Contact() {
   const [errors, setErrors] = useState<Errors>({});
   const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const sendingRef = useRef(false);
 
   const prefillHire = useCallback(() => {
     setSubject(HIRE_SUBJECT);
@@ -81,7 +83,7 @@ export function Contact() {
             className="lg:col-span-3 glass-strong rounded-2xl p-5 sm:p-7 space-y-4"
             onSubmit={async (e) => {
               e.preventDefault();
-              if (status === "sending") return;
+              if (sendingRef.current) return;
               const form = e.currentTarget;
               const fd = new FormData(form);
               const values = {
@@ -98,13 +100,14 @@ export function Contact() {
                 form.querySelector<HTMLElement>(`[name="${Object.keys(errs)[0]}"]`)?.focus();
                 return;
               }
+              sendingRef.current = true;
               setStatus("sending");
               setNote("");
               try {
                 const res = await send({ data: values });
                 if (res.ok) {
                   setStatus("success");
-                  setNote("Message sent successfully! I'll get back to you soon.");
+                  setNote("Message sent successfully!");
                   form.reset();
                   setSubject("");
                 } else {
@@ -114,6 +117,8 @@ export function Contact() {
               } catch {
                 setStatus("error");
                 setNote("Could not send your message. Please check your connection and try again.");
+              } finally {
+                sendingRef.current = false;
               }
             }}
             onChange={(e) => {
@@ -168,22 +173,24 @@ export function Contact() {
               </div>
             )}
             <div className="flex flex-wrap gap-3 pt-2">
-              <button
+              <Button
+                variant="ghost"
                 type="submit"
                 disabled={status === "sending"}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-white animate-glow-pulse disabled:opacity-60 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-6 py-3 h-auto rounded-full text-sm font-medium text-primary-foreground animate-glow-pulse disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ background: "var(--gradient-primary)" }}
               >
                 {status === "sending" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {status === "sending" ? "Sending..." : "Send Message"}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={prefillHire}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium neon-border hover:neon-glow transition-all"
               >
                 <Briefcase className="w-4 h-4" /> Hire Me
-              </button>
+              </Button>
             </div>
           </form>
         </div>

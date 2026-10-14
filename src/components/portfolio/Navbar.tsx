@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Code2, Sun, Moon, FileText, Linkedin, Github } from "lucide-react";
-import { usePortfolioAssets } from "@/lib/portfolio-assets";
+import { Code2, Sun, Moon, Linkedin, Github } from "lucide-react";
+import { ResumeButton } from "./ResumeButton";
 import { GITHUB_PROFILE, LINKEDIN_PROFILE } from "@/lib/portfolio-data";
 
 const links = [
@@ -52,7 +52,7 @@ export function Navbar() {
           <Code2 className="w-6 h-6 text-neon-purple" />
           <span className="text-gradient">Kavya.dev</span>
         </a>
-        <ul className="hidden lg:flex items-center gap-6 text-sm">
+        <ul className="hidden xl:flex items-center gap-4 text-sm">
           {links.map((l) => (
             <li key={l.href}>
               <a
@@ -84,7 +84,7 @@ export function Navbar() {
           >
             <Github className="w-4 h-4" />
           </a>
-          <ResumeNavButton />
+          <ResumeButton compact />
           <button
             onClick={toggleTheme}
             aria-label="Toggle theme"
@@ -94,9 +94,10 @@ export function Navbar() {
           </button>
         </div>
         <button
-          className="lg:hidden text-foreground"
+          className="xl:hidden text-foreground"
           onClick={() => setOpen(!open)}
           aria-label="Menu"
+          aria-expanded={open}
         >
           <div className="w-6 h-0.5 bg-foreground mb-1.5" />
           <div className="w-6 h-0.5 bg-foreground mb-1.5" />
@@ -104,7 +105,7 @@ export function Navbar() {
         </button>
       </div>
       {open && (
-        <div className="lg:hidden glass-strong mt-3 mx-6 rounded-xl p-4">
+        <div className="xl:hidden glass-strong mt-3 mx-6 rounded-xl p-4 max-h-[80vh] overflow-y-auto">
           {links.map((l) => (
             <a
               key={l.href}
@@ -115,26 +116,14 @@ export function Navbar() {
               {l.label}
             </a>
           ))}
+          <div className="md:hidden flex items-center gap-4 pt-3">
+            <a href={LINKEDIN_PROFILE} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Linkedin className="w-5 h-5" /></a>
+            <a href={GITHUB_PROFILE} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><Github className="w-5 h-5" /></a>
+            <ResumeButton compact />
+          </div>
         </div>
       )}
     </nav>
   );
 }
 
-function ResumeNavButton() {
-  const { assets } = usePortfolioAssets();
-  const resume = assets.resume;
-  if (resume) {
-    return (
-      <a
-        href={resume.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium neon-border hover:neon-glow transition-all"
-      >
-        <FileText className="w-3.5 h-3.5" /> Resume
-      </a>
-    );
-  }
-  return null;
-}

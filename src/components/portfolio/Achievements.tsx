@@ -3,6 +3,7 @@ import { SectionHeader } from "./About";
 import { Trophy, Users, Sprout, Target, Award, Upload, Eye, Loader2 } from "lucide-react";
 import { usePortfolioAssets } from "@/lib/portfolio-assets";
 import { CERTIFICATES, type Certificate } from "@/lib/portfolio-data";
+import { Button } from "@/components/ui/button";
 
 const achievements = [
   {
@@ -57,9 +58,6 @@ export function Achievements() {
 
         <div id="certificates" className="mb-6 scroll-mt-24">
           <h3 className="text-2xl font-bold mb-2">Certifications</h3>
-          <p className="text-sm text-muted-foreground">
-            Click "View Certificate" to open each certificate in a new tab.
-          </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {CERTIFICATES.map((c) => (
@@ -74,7 +72,6 @@ export function Achievements() {
 function CertCard({ cert }: { cert: Certificate }) {
   const { assets, isOwner, uploadingKey, upload } = usePortfolioAssets();
   const inputRef = useRef<HTMLInputElement>(null);
-  const label = `${cert.title} — ${cert.issuer}`;
   const key = `certificate-${cert.id}`;
   const source = assets[key];
   const busy = uploadingKey === key;
@@ -87,19 +84,20 @@ function CertCard({ cert }: { cert: Certificate }) {
       <div className="flex-1 min-w-0">
         <div className="text-sm">{cert.title}</div>
         <div className="text-[11px] text-muted-foreground">{cert.issuer}</div>
-        {source && <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-mono text-neon-cyan mt-2 inline-flex items-center gap-1.5 hover:underline">
+        {source ? <Button variant="link" asChild className="text-[10px] font-mono text-neon-cyan mt-2 h-auto p-0"><a href={source.url} target="_blank" rel="noopener noreferrer" aria-label={`View Certificate — ${cert.title}`}>
             <Eye className="w-3 h-3" /> View Certificate
-          </a>}
+          </a></Button> : <><Button variant="link" disabled className="text-[10px] font-mono mt-2 h-auto p-0" aria-label={`View Certificate — ${cert.title}`}><Eye />View Certificate</Button><p className="text-[11px] text-muted-foreground mt-1">File not uploaded yet</p></>}
         {isOwner && (
           <div className="mt-2 flex flex-wrap gap-2">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={busy}
               className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-md glass border border-border hover:border-neon-purple/60"
             >
               {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} {source ? "Replace" : "Upload"}
-            </button>
+            </Button>
             <input
               ref={inputRef}
               type="file"

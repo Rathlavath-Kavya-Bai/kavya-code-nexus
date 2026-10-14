@@ -1,11 +1,13 @@
 import { Settings, LogOut, Loader2 } from "lucide-react";
 import { usePortfolioAssets } from "@/lib/portfolio-assets";
+import { Button } from "@/components/ui/button";
 
 export function EditToggle() {
   const { user, isOwner, loading, error, signIn, signOut } = usePortfolioAssets();
   return (
     <>
-    <button
+    <Button
+      variant="ghost"
       onClick={() => void (user ? signOut() : signIn())}
       title={user ? "Sign out of owner mode" : "Owner sign in"}
       aria-label={user ? "Sign out of owner mode" : "Owner sign in"}
@@ -20,7 +22,7 @@ export function EditToggle() {
       ) : (
         <Settings className="w-4 h-4 text-muted-foreground" />
       )}
-    </button>
+    </Button>
     {error && <div role="alert" className="fixed bottom-20 right-5 z-50 max-w-xs glass-strong border border-destructive/50 rounded-xl px-4 py-3 text-xs text-destructive">{error}</div>}
     </>
   );

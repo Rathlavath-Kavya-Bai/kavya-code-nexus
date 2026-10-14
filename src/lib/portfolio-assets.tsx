@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +42,7 @@ export function PortfolioAssetsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [uploadingKey, setUploadingKey] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const uploadLock = useRef(false);
 
   const loadAssets = useCallback(async () => {
     const { data, error: readError } = await supabase
@@ -54,7 +55,8 @@ export function PortfolioAssetsProvider({ children }: { children: ReactNode }) {
     const next: Record<string, PortfolioAsset> = {};
     await Promise.all(
       (data ?? []).map(async (row) => {
-        const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(row.storage_path, 3600);
+        const { data: signed, error: signError } = await supabase.storage.from(BUCKET).createSignedUrl(row.storage_path, 3600);
+        if (signError) setError("A portfolio file could not be opened. Please refresh and try again.");
         if (signed?.signedUrl) {
           next[row.asset_key] = {
             key: row.asset_key,
@@ -70,18 +72,25 @@ export function PortfolioAssetsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    void Promise.all([supabase.auth.getUser(), loadAssets()]).then(([auth]) => {
+    void Promise.all([supabase.auth.getSession(), loadAssets()]).then(([auth]) => {
       if (!active) return;
-      setUser(auth.data.user ?? null);
+      setUser(auth.data.session?.user ?? null);
       setLoading(false);
+    }).catch(() => {
+      if (active) { setError("Portfolio files could not be loaded. Please refresh and try again."); setLoading(false); }
     });
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
         setUser(session?.user ?? null);
       }
     });
+    const renewal = window.setInterval(() => { void loadAssets().catch(() => setError("Portfolio files could not be refreshed.")); }, 30 * 60 * 1000);
+    const refreshOnFocus = () => { void loadAssets().catch(() => setError("Portfolio files could not be refreshed.")); };
+    window.addEventListener("focus", refreshOnFocus);
     return () => {
       active = false;
+      window.clearInterval(renewal);
+      window.removeEventListener("focus", refreshOnFocus);
       data.subscription.unsubscribe();
     };
   }, [loadAssets]);
@@ -103,19 +112,35 @@ export function PortfolioAssetsProvider({ children }: { children: ReactNode }) {
 
   const upload = useCallback(
     async (key: string, file: File) => {
+      if (uploadLock.current) return false;
       if (!isOwner || !user) {
         setError("Sign in with the portfolio owner account to update files.");
         return false;
       }
-      if (file.size > 10 * 1024 * 1024) {
+      if (!file.size || file.size > 10 * 1024 * 1024) {
         setError("Please choose a file smaller than 10 MB.");
         return false;
       }
+      const imageTypes = ["image/png", "image/jpeg", "image/webp"];
+      const allowed = key === "resume" ? ["application/pdf"] : key === "profilePhoto" ? imageTypes : ["application/pdf", ...imageTypes];
+      if (!allowed.includes(file.type)) {
+        setError(key === "resume" ? "Please choose a PDF resume." : "Please choose a PDF, PNG, JPG or WebP file as appropriate.");
+        return false;
+      }
+      if (file.type === "application/pdf") {
+        const header = await file.slice(0, 5).text();
+        if (header !== "%PDF-") { setError("This file is not a valid PDF. Please choose a valid PDF."); return false; }
+      } else {
+        try { const bitmap = await createImageBitmap(file); bitmap.close(); }
+        catch { setError("This image could not be read. Please choose another photo."); return false; }
+      }
+      uploadLock.current = true;
       setUploadingKey(key);
       setError("");
-      const path = `${key}.${extensionFor(file)}`;
+      try {
+      const path = `${key}/${crypto.randomUUID()}.${extensionFor(file)}`;
       const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file, {
-        upsert: true,
+        upsert: false,
         contentType: file.type,
       });
       if (uploadError) {
@@ -133,6 +158,7 @@ export function PortfolioAssetsProvider({ children }: { children: ReactNode }) {
         updated_at: new Date().toISOString(),
       });
       if (saveError) {
+        await supabase.storage.from(BUCKET).remove([path]);
         setError("The uploaded file could not be activated. Please try again.");
         setUploadingKey(null);
         return false;
@@ -140,6 +166,13 @@ export function PortfolioAssetsProvider({ children }: { children: ReactNode }) {
       await loadAssets();
       setUploadingKey(null);
       return true;
+      } catch {
+        setError("The file could not be saved. Please check your connection and try again.");
+        return false;
+      } finally {
+        uploadLock.current = false;
+        setUploadingKey(null);
+      }
     },
     [isOwner, loadAssets, user],
   );
