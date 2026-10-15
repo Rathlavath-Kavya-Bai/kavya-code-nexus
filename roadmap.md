@@ -1,5 +1,7 @@
 # Portfolio update
 
+- [ ] Restore AI matcher, render four sample role buttons, and verify selections in the preview.
+
 - [x] Preserve visual identity; remove AI matcher; correct Skills and About.
 - [x] Implement secure persistent resume, profile photo and certificate management; signed links renew periodically.
 - [x] Verify navigation, mobile layout and contact validation; duplicate-send protection uses a synchronous lock.
