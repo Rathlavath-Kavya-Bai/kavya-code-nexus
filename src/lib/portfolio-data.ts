@@ -25,8 +25,8 @@ export const EMAIL = "kavyabairathlavath@gmail.com";
 export const PHONE = "+919391601350";
 export const PHONE_DISPLAY = "+91 93916 01350";
 
-/** Set once the real PDF exists in public/resume/. Empty = not uploaded yet. */
-export const RESUME_URL = "/resume/Rathlavath_Kavya_Bai_Fresher_Resume.pdf";
+/** Resume files are managed through persistent owner uploads. */
+export const RESUME_URL = "";
 
 export type Project = {
   id: string;

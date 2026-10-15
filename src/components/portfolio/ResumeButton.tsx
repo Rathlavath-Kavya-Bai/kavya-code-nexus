@@ -18,7 +18,7 @@ export function ResumeButton({ compact = false }: { compact?: boolean }) {
       : <Button variant="ghost" className={cls} onClick={() => setOpen(true)}><FileText />Resume</Button>}
     {isOwner && resume && !compact && <Button variant="ghost" className={cls} onClick={() => setOpen(true)}><Upload />Resume Management</Button>}
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md neon-border">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md bg-popover text-popover-foreground neon-border">
         <DialogTitle>{resume ? "Resume Management" : "Add Resume"}</DialogTitle>
         <DialogDescription>{isOwner ? "Upload a PDF up to 10 MB. The new resume becomes active after saving." : "The portfolio owner can sign in to upload the resume PDF."}</DialogDescription>
         {isOwner ? <Button variant="outline" disabled={busy} onClick={() => input.current?.click()}>{busy ? <Loader2 className="animate-spin" /> : <Upload />}{busy ? "Uploading…" : resume ? "Upload New Resume" : "Upload Resume PDF"}</Button>
