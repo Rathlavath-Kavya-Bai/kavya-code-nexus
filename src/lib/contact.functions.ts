@@ -2,10 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().trim().min(1).max(100),
+  name: z.string().trim().min(2).max(100),
   email: z.string().trim().email().max(255),
   subject: z.string().trim().min(1).max(150),
-  message: z.string().trim().min(1).max(2000),
+  message: z.string().trim().min(10).max(2000),
 });
 
 export const sendContactMessage = createServerFn({ method: "POST" })

@@ -60,16 +60,16 @@ function Particles() {
           key={i}
           className="absolute rounded-full"
           style={{
-            width: `${Math.random() * 3 + 1}px`,
-            height: `${Math.random() * 3 + 1}px`,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            background: i % 2 ? "oklch(0.7 0.22 230)" : "oklch(0.65 0.28 295)",
-            boxShadow: `0 0 ${Math.random() * 10 + 5}px currentColor`,
-            color: i % 2 ? "oklch(0.7 0.22 230)" : "oklch(0.65 0.28 295)",
-            animation: `float ${Math.random() * 6 + 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 5}s`,
-            opacity: Math.random() * 0.6 + 0.2,
+            width: `${1 + (i % 4)}px`,
+            height: `${1 + (i % 4)}px`,
+            left: `${(i * 37 + 13) % 100}%`,
+            top: `${(i * 53 + 7) % 100}%`,
+            background: i % 2 ? "var(--neon-blue)" : "var(--neon-purple)",
+            boxShadow: `0 0 ${5 + (i % 10)}px currentColor`,
+            color: i % 2 ? "var(--neon-blue)" : "var(--neon-purple)",
+            animation: `float ${4 + (i % 6)}s ease-in-out infinite`,
+            animationDelay: `${i % 5}s`,
+            opacity: 0.2 + (i % 7) / 10,
           }}
         />
       ))}
