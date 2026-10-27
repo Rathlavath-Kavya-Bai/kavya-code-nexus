@@ -6,9 +6,11 @@ import { PROJECTS } from "@/lib/portfolio-data";
 import { SKILL_GROUPS } from "@/lib/skills-data";
 
 const schema = z.object({
+  score: z.number(),
   summary: z.string(),
   projects: z.array(z.object({ id: z.string(), reason: z.string() })),
   skills: z.array(z.object({ name: z.string(), reason: z.string() })),
+  gaps: z.array(z.object({ requirement: z.string(), note: z.string() })),
 });
 
 export async function runMatch(description: string) {
