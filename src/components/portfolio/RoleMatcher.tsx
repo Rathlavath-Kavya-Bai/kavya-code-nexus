@@ -12,7 +12,7 @@ const samples = [
   { role: "Full Stack Developer", description: "Full Stack Developer: develop web applications with frontend interfaces, backend logic, SQL databases, REST APIs and authentication. Looking for practical projects, teamwork and problem solving." },
   { role: "AI / ML Associate", description: "AI / ML Associate: Python fundamentals, AI-powered applications, machine learning concepts, automation and analytical problem solving. Interested in applied AI projects with real-world impact." },
 ];
-type Match = { summary: string; projects: { id: string; reason: string }[]; skills: { name: string; reason: string }[] };
+type Match = { score: number; gaps: { requirement: string; note: string }[]; summary: string; projects: { id: string; reason: string }[]; skills: { name: string; reason: string }[] };
 
 export function RoleMatcher() {
   const [description, setDescription] = useState("");
@@ -51,7 +51,21 @@ export function RoleMatcher() {
         {error && <p role="alert" className="text-destructive text-sm">{error}</p>}
       </form>
       {result && <div className="mt-10 space-y-6" aria-live="polite">
-        <p className="text-muted-foreground">{result.summary}</p>
+        <div className="glass neon-border rounded-xl p-6 grid gap-6 md:grid-cols-[auto_1fr] items-center">
+          <div className="text-center">
+            <p className="text-5xl font-bold text-gradient">{result.score}%</p>
+            <p className="text-sm text-muted-foreground mt-1">{result.score >= 75 ? "Strong match" : result.score >= 50 ? "Good match" : "Partial match"}</p>
+          </div>
+          <div className="space-y-4">
+            <div className="h-2 rounded-full bg-muted overflow-hidden" role="progressbar" aria-label="Overall match score" aria-valuenow={result.score} aria-valuemin={0} aria-valuemax={100}><div className="h-full bg-primary" style={{ width: `${result.score}%` }} /></div>
+            <div className="grid grid-cols-3 gap-3 text-center text-sm">
+              <div><p className="text-2xl font-semibold">{result.skills.length}</p><p className="text-muted-foreground">Matched skills</p></div>
+              <div><p className="text-2xl font-semibold">{result.projects.length}</p><p className="text-muted-foreground">Relevant projects</p></div>
+              <div><p className="text-2xl font-semibold">{result.gaps.length}</p><p className="text-muted-foreground">Experience gaps</p></div>
+            </div>
+            <p className="text-muted-foreground">{result.summary}</p>
+          </div>
+        </div>
         <h3 className="text-xl font-semibold">Relevant projects</h3>
         <div className="grid md:grid-cols-3 gap-4">{result.projects.map(item => <article key={item.id} className="glass rounded-lg p-5">
           <h4 className="font-semibold">{PROJECTS.find(project => project.id === item.id)?.title}</h4>
@@ -60,6 +74,8 @@ export function RoleMatcher() {
         </article>)}</div>
         <h3 className="text-xl font-semibold">Relevant skills</h3>
         <div className="grid md:grid-cols-2 gap-4">{result.skills.map(item => <article key={item.name} className="border-b border-border pb-4"><h4 className="font-semibold">{item.name}</h4><p className="text-sm text-muted-foreground mt-2">{item.reason}</p></article>)}</div>
+        <h3 className="text-xl font-semibold">Experience gaps</h3>
+        {result.gaps.length ? <ul className="grid md:grid-cols-2 gap-4">{result.gaps.map(gap => <li key={gap.requirement} className="rounded-lg border border-border p-4"><h4 className="font-semibold">{gap.requirement}</h4><p className="text-sm text-muted-foreground mt-2">{gap.note}</p></li>)}</ul> : <p className="text-muted-foreground text-sm">No major gaps found for this role.</p>}
       </div>}
     </div>
   </section>;
